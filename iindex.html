@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraChain Telemetry Console</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .animate-pulse-slow { animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans p-6 min-h-screen">
+
+    <!-- Header -->
+    <header class="flex justify-between items-center pb-6 mb-6 border-b border-slate-800">
+        <div class="flex items-center space-x-3">
+            <div class="bg-blue-600 px-3 py-2 rounded-lg text-white font-black text-xl">AC</div>
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-white">AuraChain Telemetry Console</h1>
+                <p class="text-xs text-slate-400">Cold-Chain Spoilage Prevention System</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span class="flex items-center space-x-2 text-xs bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-full">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse-slow"></span>
+                <span class="text-slate-300">Live WebSockets Active</span>
+            </span>
+            <div class="text-xs text-right">
+                <p class="text-slate-400">Target Partner</p>
+                <p class="font-semibold text-blue-400">Govind Milk Fleet #MH-11</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Critical Alert Banner -->
+    <div id="alertBanner" class="hidden mb-6 p-4 rounded-xl bg-red-950/80 border border-red-500/50 flex items-center justify-between text-red-200">
+        <div>
+            <p id="alertTitle" class="font-bold text-sm">THERMAL EXCURSION DETECTED</p>
+            <p id="alertDesc" class="text-xs text-red-300 mt-0.5">Accelerated Arrhenius rate applied.</p>
+        </div>
+        <button class="bg-red-600 hover:bg-red-700 text-white text-xs px-4 py-2 rounded-lg font-semibold">
+            Initiate Emergency Divert Route
+        </button>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div id="tempCard" class="p-5 rounded-xl bg-slate-900/60 border border-slate-800 transition-colors">
+            <p class="text-slate-400 text-xs">Cargo Ambient Temp</p>
+            <div class="flex items-baseline space-x-2 mt-1">
+                <span id="tempVal" class="text-3xl font-extrabold text-emerald-400">-- °C</span>
+                <span class="text-xs text-slate-500">Target: 4.0°C</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-2">Compressor: <span id="compStatus" class="font-semibold text-slate-200">--</span></p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
+            <p class="text-slate-400 text-xs">Batch Viability</p>
+            <div class="flex items-baseline space-x-2 mt-1">
+                <span id="viabilityVal" class="text-3xl font-extrabold text-white">-- %</span>
+                <span class="text-xs text-slate-500">Grade A Raw Milk</span>
+            </div>
+            <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+                <div id="viabilityBar" class="h-full bg-emerald-500 transition-all duration-500" style="width: 100%"></div>
+            </div>
+        </div>
+
+        <div class="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
+            <p class="text-slate-400 text-xs">Dynamic Shelf-Life</p>
+            <div class="flex items-baseline space-x-2 mt-1">
+                <span id="shelfVal" class="text-3xl font-extrabold text-amber-400">--</span>
+                <span class="text-xs text-slate-500">Hours</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-2">Decay Rate: <span id="decayVal" class="font-mono text-amber-300">1.00x</span></p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
+            <p class="text-slate-400 text-xs">Current Transit Node</p>
+            <p id="locationVal" class="text-lg font-bold text-white mt-1 truncate">--</p>
+            <p class="text-xs text-slate-400 mt-1">Route: <span class="text-slate-300">Phaltan ➔ Pune Plant</span></p>
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
+        <h2 class="text-sm font-semibold text-slate-200 mb-4">Real-Time Thermal Telemetry Stream (Chart.js)</h2>
+        <div class="h-64">
+            <canvas id="telemetryChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('telemetryChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Cargo Temp (°C)',
+                    data: [],
+                    borderColor: '#10B981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { grid: { color: '#1E293B' }, ticks: { color: '#94A3B8' } },
+                    x: { grid: { color: '#1E293B' }, ticks: { color: '#94A3B8' } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Connect to WebSocket Server
+        const ws = new WebSocket(`ws://${window.location.host}`);
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            
+            // Update UI elements
+            document.getElementById('tempVal').innerText = `${data.temperature}°C`;
+            document.getElementById('compStatus').innerText = data.compressor_status;
+            document.getElementById('viabilityVal').innerText = `${data.viability_percentage}%`;
+            document.getElementById('viabilityBar').style.width = `${data.viability_percentage}%`;
+            document.getElementById('shelfVal').innerText = data.remaining_shelf_life_hrs;
+            document.getElementById('decayVal').innerText = `${data.spoilage_factor}x`;
+            document.getElementById('locationVal').innerText = data.location_name;
+
+            const isSpike = data.temperature > 4.0;
+            
+            // Handle Alerts
+            const alertBanner = document.getElementById('alertBanner');
+            const tempCard = document.getElementById('tempCard');
+            if (isSpike) {
+                alertBanner.classList.remove('hidden');
+                document.getElementById('alertTitle').innerText = `THERMAL EXCURSION DETECTED: ${data.temperature}°C`;
+                document.getElementById('alertDesc').innerText = `Compressor fault reported. Biophysical decay accelerated by ${data.spoilage_factor}x.`;
+                tempCard.className = "p-5 rounded-xl bg-red-950/40 border border-red-800 transition-colors";
+                document.getElementById('tempVal').className = "text-3xl font-extrabold text-red-400";
+            } else {
+                alertBanner.classList.add('hidden');
+                tempCard.className = "p-5 rounded-xl bg-slate-900/60 border border-slate-800 transition-colors";
+                document.getElementById('tempVal').className = "text-3xl font-extrabold text-emerald-400";
+            }
+
+            // Update Chart
+            const time = new Date().toLocaleTimeString();
+            if (chart.data.labels.length > 12) {
+                chart.data.labels.shift();
+                chart.data.datasets[0].data.shift();
+            }
+            chart.data.labels.push(time);
+            chart.data.datasets[0].data.push(data.temperature);
+            chart.data.datasets[0].borderColor = isSpike ? '#EF4444' : '#10B981';
+            chart.data.datasets[0].backgroundColor = isSpike ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)';
+            chart.update();
+        };
+    </script>
+</body>
+</html>
