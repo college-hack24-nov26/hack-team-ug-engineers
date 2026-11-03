@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f2eb" />
+    <meta name="description" content="AuraChain simulated dairy cold-chain monitoring dashboard prototype." />
+    <title>AuraChain — Cold-chain visibility</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="#overview" aria-label="AuraChain home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 40 40" fill="none"><path d="M8 27.5C14.8 27.5 16.6 12.5 31.5 12.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M8 20C14.8 20 16.6 27.5 31.5 27.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="8" cy="23.8" r="3.8" fill="#E3A72F"/><circle cx="31.5" cy="12.5" r="3.3" fill="currentColor"/><circle cx="31.5" cy="27.5" r="3.3" fill="currentColor"/></svg>
+          </span>
+          <span class="brand-copy"><strong>AuraChain</strong><small>DAIRY SIGNAL SYSTEM</small></span>
+        </a>
+
+        <div class="nav-caption">OPERATIONS</div>
+        <nav class="primary-nav">
+          <a class="nav-link active" href="#overview" aria-current="page"><span class="nav-icon">◫</span><span>Live overview</span><span class="nav-indicator"></span></a>
+          <a class="nav-link" href="#shipments"><span class="nav-icon">▤</span><span>Shipments</span><span class="nav-count">04</span></a>
+          <a class="nav-link" href="#quality"><span class="nav-icon">⌁</span><span>Quality signals</span></a>
+          <a class="nav-link" href="#events"><span class="nav-icon">◷</span><span>Event history</span></a>
+        </nav>
+
+        <div class="sidebar-spacer"></div>
+        <div class="sidebar-weather">
+          <div class="weather-heading"><span class="weather-sun">◉</span> ROUTE CONDITIONS</div>
+          <div class="weather-value">28° <span>Clear skies</span></div>
+          <div class="weather-foot">Ambient context · Simulated</div>
+        </div>
+        <div class="sidebar-profile">
+          <div class="profile-avatar">GM</div>
+          <div class="profile-copy"><strong>Govind Milk</strong><span>Operations team</span></div>
+          <span class="profile-menu">···</span>
+        </div>
+      </aside>
+
+      <main class="main-content" id="overview">
+        <header class="topbar">
+          <div class="breadcrumb"><span>Operations</span><span class="crumb-slash">/</span><strong>Live overview</strong></div>
+          <div class="topbar-actions">
+            <span class="demo-chip"><span class="demo-dot"></span> SIMULATED ENVIRONMENT</span>
+            <button class="icon-button" aria-label="Notifications" title="Notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></svg><span class="notification-dot"></span></button>
+            <div class="topbar-date" id="today-date">MON, NOV 03, 2026</div>
+          </div>
+        </header>
+
+        <section class="page-intro">
+          <div>
+            <p class="eyebrow"><span class="eyebrow-line"></span> COLD-CHAIN CONTROL TOWER</p>
+            <h1>Good afternoon, team<span class="heading-period">.</span></h1>
+            <p class="intro-subtitle">A clear view of every degree between dairy and destination.</p>
+          </div>
+          <button class="button button-dark" id="spike-button" type="button"><span class="button-spark">✳</span> Trigger temperature spike</button>
+        </section>
+
+        <section class="metric-grid" aria-label="Shipment summary">
+          <article class="metric-card metric-card-featured">
+            <div class="metric-top"><span>SHIPMENTS IN TRANSIT</span><span class="metric-icon route-icon">↗</span></div>
+            <div class="metric-value">04 <span class="metric-change">+1 today</span></div>
+            <div class="metric-caption">All active cold-chain routes</div>
+            <div class="metric-mini-track"><i></i><i></i><i></i><i></i></div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top"><span>WITHIN RANGE</span><span class="metric-icon check-icon">✓</span></div>
+            <div class="metric-value" id="within-range-count">03 <span class="metric-denom">/ 04</span></div>
+            <div class="metric-caption">Holding at or below 4°C</div>
+            <div class="metric-progress"><span id="range-progress" style="width:75%"></span></div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top"><span>NEEDS ATTENTION</span><span class="metric-icon alert-icon">!</span></div>
+            <div class="metric-value" id="attention-count">01</div>
+            <div class="metric-caption" id="attention-caption">1 shipment on watch</div>
+            <div class="attention-state"><span class="pulse-small"></span><span id="attention-state-text">Monitoring excursion</span></div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top"><span>AVG. PRODUCT TEMP</span><span class="metric-icon temp-icon">°</span></div>
+            <div class="metric-value" id="average-temp">3.4<span class="unit-small">°C</span></div>
+            <div class="metric-caption">Across monitored shipments</div>
+            <div class="mini-sparkline" aria-hidden="true"><svg viewBox="0 0 120 25"><path d="M1 18 C12 16 13 11 24 13 S38 19 48 13 S61 10 69 12 S83 18 92 10 S106 12 119 4"/></svg></div>
+          </article>
+        </section>
+
+        <section class="section-heading" id="shipments">
+          <div class="section-title-wrap"><div class="section-kicker">IN FOCUS</div><h2>Shipment pulse</h2></div>
+          <div class="live-feed"><span class="live-dot"></span><span id="feed-status">LIVE SIMULATION</span><span class="feed-divider">·</span><span id="last-updated">Updated just now</span><button class="text-button" id="stream-toggle" type="button">Pause stream</button></div>
+        </section>
+
+        <section class="focus-grid">
+          <article class="panel map-panel">
+            <div class="panel-header map-header">
+              <div><div class="panel-overline">ACTIVE DELIVERY <span class="shipment-id">GM-2048</span></div><h3>Whole milk · 500 ml cartons</h3></div>
+              <span class="status-pill status-safe" id="shipment-status"><span></span> ON ROUTE</span>
+            </div>
+            <div class="map-summary-row">
+              <div class="map-stop"><span class="stop-icon factory-icon">⌂</span><span><small>ORIGIN</small><strong>Govind Milk Plant</strong></span></div>
+              <span class="route-dash" aria-hidden="true"></span>
+              <div class="map-stop"><span class="stop-icon destination-icon">⌖</span><span><small>DESTINATION</small><strong>Regional Distributor</strong></span></div>
+            </div>
+            <div class="map-canvas" id="map-canvas">
+              <div class="map-label map-label-top"><span class="map-label-dot"></span> SIMULATED ROUTE · NOT TO SCALE</div>
+              <svg class="route-map" id="route-map" viewBox="0 0 900 360" role="img" aria-label="Illustrative simulated route map showing a dairy truck between the plant and distributor">
+                <defs>
+                  <pattern id="mapGrid" width="34" height="34" patternUnits="userSpaceOnUse"><path d="M34 0H0V34" fill="none" stroke="#dfe4d8" stroke-width="1" opacity=".57"/></pattern>
+                  <pattern id="fieldDots" width="11" height="11" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#c8d7b7" opacity=".55"/></pattern>
+                  <filter id="truckShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#33483a" flood-opacity=".2"/></filter>
+                </defs>
+                <rect width="900" height="360" fill="#edf0e5"/>
+                <rect width="900" height="360" fill="url(#mapGrid)"/>
+                <path d="M0 33 C110 74 143 11 245 46S372 78 438 42 575 10 646 45 795 75 900 32V0H0Z" fill="#e4ead9"/>
+                <path d="M9 287 C109 260 148 307 234 278S360 293 449 266 590 277 665 249 796 266 902 224V360H0Z" fill="#e4ead9"/>
+                <path d="M95 0L202 360M462 0L384 360M747 0L689 360" stroke="#d6dfcc" stroke-width="1.4" stroke-dasharray="5 7"/>
+                <path d="M-8 183 C89 161 155 205 236 178 C310 154 355 123 429 146 C497 167 539 226 619 204 C706 180 766 110 913 130" fill="none" stroke="#d8b66e" stroke-width="22" stroke-linecap="round" opacity=".34"/>
+                <path d="M-8 183 C89 161 155 205 236 178 C310 154 355 123 429 146 C497 167 539 226 619 204 C706 180 766 110 913 130" fill="none" stroke="#fffdf7" stroke-width="14" stroke-linecap="round"/>
+                <path d="M-8 183 C89 161 155 205 236 178 C310 154 355 123 429 146 C497 167 539 226 619 204 C706 180 766 110 913 130" fill="none" stroke="#78916a" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 9"/>
+                <path d="M251 0l-6 73 32 40-15 42m112 30-34 29 5 52-35 35m195-182 22 34-18 45 29 52m114-155 5 42 50 36-9 63m85-223-14 58 25 43-10 41" fill="none" stroke="#c8d1bf" stroke-width="1.4" opacity=".8"/>
+                <rect x="47" y="57" width="110" height="51" rx="7" fill="url(#fieldDots)" opacity=".8"/><rect x="697" y="271" width="148" height="51" rx="7" fill="url(#fieldDots)" opacity=".8"/>
+                <text x="76" y="87" class="map-place-label">NORTH DAIRY YARD</text><text x="716" y="300" class="map-place-label">DISTRIBUTION ZONE</text>
+                <g class="map-start"><circle cx="129" cy="174" r="14" fill="#fffdf7" stroke="#315c45" stroke-width="3"/><circle cx="129" cy="174" r="5" fill="#315c45"/><text x="101" y="222" class="map-city-label">PLANT</text></g>
+                <g class="map-end"><circle cx="769" cy="145" r="15" fill="#fffdf7" stroke="#315c45" stroke-width="3"/><circle cx="769" cy="145" r="5" fill="#315c45"/><text x="736" y="193" class="map-city-label">DISTRIBUTOR</text></g>
+                <g class="truck-marker" id="truck-marker" transform="translate(492 183)" tabindex="0" role="button" aria-label="Simulated truck location. Activate for details." filter="url(#truckShadow)">
+                  <circle class="truck-halo" r="25" fill="#315c45" opacity=".12"/><circle r="16" fill="#315c45" stroke="#fffdf7" stroke-width="3"/><path d="M-8 2V-5h9v7m0-5h4l3 3v2H1m-7 0h2m9 0h2" fill="none" stroke="#fffdf7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+                <g class="map-popover" id="map-popover" opacity="0"><rect x="515" y="144" width="172" height="52" rx="8" fill="#fffdf7" stroke="#d9dfd3"/><text x="530" y="164" class="popover-title">GM-2048 · IN TRANSIT</text><text x="530" y="182" class="popover-copy">Simulated location update</text></g>
+                <text x="36" y="334" class="map-scale">ILLUSTRATIVE MAP · ROUTE SHAPE IS SIMULATED</text>
+              </svg>
+              <div class="map-controls"><button class="map-control" type="button" id="zoom-in" aria-label="Zoom in">+</button><button class="map-control" type="button" id="zoom-out" aria-label="Zoom out">−</button><span class="map-controls-rule"></span><button class="map-control locate-control" type="button" id="recenter" aria-label="Recenter truck">◎</button></div>
+              <div class="map-location"><span class="location-pulse"></span><span><small>TRUCK POSITION</small><strong id="location-copy">En route · simulated</strong></span><span class="location-arrow">↗</span></div>
+            </div>
+            <div class="map-footer"><span><span class="map-legend-dot"></span> Truck location</span><span class="footer-separator">·</span><span>Last GPS ping <strong>12 sec ago</strong></span><span class="map-footer-spacer"></span><button class="link-button" type="button" id="route-details">Route details <span>↗</span></button></div>
+          </article>
+
+          <article class="panel telemetry-panel" id="quality">
+            <div class="panel-header telemetry-header">
+              <div><div class="panel-overline">CARGO SENSOR <span class="sensor-online"><i></i> CONNECTED</span></div><h3>Temperature history</h3></div>
+              <button class="more-button" type="button" aria-label="More chart options">···</button>
+            </div>
+            <div class="temp-current-row"><div class="temp-current" id="current-temp">3.6<span>°C</span></div><div class="temp-current-meta"><span class="temp-change" id="temp-change">−0.2°</span><small>vs. previous reading</small></div></div>
+            <div class="chart-legend"><span><i class="legend-temp"></i> Cargo temperature</span><span><i class="legend-threshold"></i> 4°C threshold</span></div>
+            <div class="chart-wrap">
+              <svg id="temperature-chart" viewBox="0 0 520 220" preserveAspectRatio="none" role="img" aria-label="Simulated cargo temperature line chart with a 4 degrees Celsius alert threshold">
+                <defs><linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#77906a" stop-opacity=".24"/><stop offset="1" stop-color="#77906a" stop-opacity="0"/></linearGradient></defs>
+                <g class="chart-grid"><line x1="42" x2="506" y1="29" y2="29"/><line x1="42" x2="506" y1="74" y2="74"/><line x1="42" x2="506" y1="119" y2="119"/><line x1="42" x2="506" y1="164" y2="164"/></g>
+                <g class="chart-y-labels"><text x="4" y="33">8°</text><text x="4" y="78">6°</text><text x="4" y="123">4°</text><text x="4" y="168">2°</text><text x="4" y="213">0°</text></g>
+                <line class="threshold-line" id="threshold-line" x1="42" x2="506" y1="119" y2="119"/><text class="threshold-tag" x="441" y="113">4°C LIMIT</text>
+                <path id="chart-area" class="chart-area" d=""/>
+                <path id="chart-line" class="chart-line" d=""/>
+                <circle id="chart-point" class="chart-point" cx="0" cy="0" r="5"/>
+                <g class="chart-x-labels"><text x="42" y="216">−20 min</text><text x="251" y="216" text-anchor="middle">−10 min</text><text x="506" y="216" text-anchor="end">NOW</text></g>
+              </svg>
+            </div>
+            <div class="chart-alert" id="chart-alert" hidden><span class="alert-sign">!</span><div><strong>Temperature excursion detected</strong><small id="chart-alert-copy">Cargo is above the 4°C monitoring threshold.</small></div><span class="alert-chevron">↗</span></div>
+            <div class="chart-note"><span class="note-mark">i</span> Readings are simulated for demonstration only.</div>
+          </article>
+        </section>
+
+        <section class="lower-grid">
+          <article class="panel shelf-panel">
+            <div class="panel-header shelf-header"><div><div class="panel-overline">PREDICTIVE QUALITY SIGNAL</div><h3>Estimated shelf life</h3></div><span class="estimate-tag">DEMO MODEL</span></div>
+            <div class="shelf-content">
+              <div class="shelf-number-wrap"><strong id="shelf-life">31.8</strong><span>hours<br/>remaining</span></div>
+              <div class="shelf-meter"><div class="meter-track"><span id="shelf-meter-fill" style="width:81%"></span><i class="meter-marker" id="meter-marker" style="left:81%"></i></div><div class="meter-labels"><span>0h</span><span>Estimated at arrival</span><span>39h</span></div></div>
+            </div>
+            <div class="shelf-foot"><span class="shelf-foot-icon">⌁</span><span id="shelf-note">Based on current simulated temperature profile</span><button class="info-button" type="button" title="This estimate uses illustrative demo logic and is not a safety determination." aria-label="About this estimate">i</button></div>
+          </article>
+          <article class="panel action-panel" id="events">
+            <div class="action-top"><div><div class="panel-overline">NEXT BEST ACTION</div><h3 id="action-title">Conditions look steady</h3></div><span class="action-icon" id="action-icon">✓</span></div>
+            <p id="action-copy">Keep the shipment on its planned route. Continue monitoring the cargo sensor.</p>
+            <div class="action-bottom"><span class="action-priority" id="action-priority"><i></i> ROUTINE</span><button type="button" class="action-button" id="action-button">Acknowledge <span>→</span></button></div>
+          </article>
+          <article class="panel event-panel">
+            <div class="panel-header event-header"><div><div class="panel-overline">LATEST ACTIVITY</div><h3>Route events</h3></div><button class="link-button" type="button" id="view-events">View all <span>↗</span></button></div>
+            <div class="event-list" id="event-list">
+              <div class="event-item"><span class="event-marker event-marker-green">✓</span><div class="event-copy"><strong>Cold room departure</strong><span>Govind Milk Plant · Sensor online</span></div><time>10:42</time></div>
+              <div class="event-item"><span class="event-marker event-marker-amber">↗</span><div class="event-copy"><strong>Shipment in transit</strong><span>Route progress synced</span></div><time>11:08</time></div>
+              <div class="event-item" id="spike-event" hidden><span class="event-marker event-marker-red">!</span><div class="event-copy"><strong>Temperature excursion</strong><span>Above 4°C · Demo event</span></div><time id="spike-time">Now</time></div>
+            </div>
+          </article>
+        </section>
+
+        <footer class="page-footer"><span class="footer-brand-mark">A</span><span>AuraChain <span class="footer-dot">·</span> Cold-chain visibility prototype</span><span class="footer-right">BUILDING TRUST THROUGH TRACEABILITY</span></footer>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"><span class="toast-check">✓</span><span id="toast-message">Demo state updated</span></div>
+    <div class="persistent-disclaimer"><span class="disclaimer-seal">i</span><span><strong>Prototype only:</strong> all data is simulated. Shelf-life figures are illustrative and this dashboard is not a food-safety certification system.</span><span class="disclaimer-tag">DEMO DATA</span></div>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
